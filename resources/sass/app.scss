@@ -1,11 +1,60 @@
-
 // Fonts
-@import url('https://fonts.googleapis.com/css?family=Nunito');
+@import url('https://fonts.googleapis.com/css?family=Roboto');
+@import '../../node_modules/normalize.css/normalize.css';
 
 // Variables
 @import 'variables';
 
-.navbar-laravel {
-  background-color: #fff;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.04);
+body {
+	background-color: $body-bg;
+	font-family: $font-family-sans-serif;
+	font-size: $font-size-base;
+	line-height: $line-height-base;
+	color: $font-color;
 }
+
+.container {
+	max-width: 600px;
+	margin: 0 auto;
+} 
+
+button, .button {
+	border-style: solid;
+	border-radius: 4px;
+	border-color: $orange;
+	background-color: $orange;
+	color: $white;
+	cursor: pointer;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	border-width: 1px;
+	text-decoration: none;
+
+	&.back {
+		background-color: $white;
+		color: $orange;
+		border-color: $orange;
+	}
+}
+
+.errors {
+	color: $white;
+	margin-bottom: 24px;
+
+	ul {
+		margin: 0;
+		padding: 0;
+		text-align: center;
+
+		li {
+			list-style-type:none;
+		}
+	}
+}
+
+
+@import 'components/login';
+@import 'components/events-list';
+@import 'components/participants-list';
+@import 'components/checkboxes';

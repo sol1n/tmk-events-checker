@@ -1,0 +1,62 @@
+input[type="checkbox"] {
+	&:not(:checked), &:checked {
+		position: absolute;
+		left: -9999px;
+
+		& + label {
+			position: relative;
+			padding-left: 40px;
+			line-height: 24px;
+			cursor: pointer;
+
+			&::before {
+				content: '';
+				position: absolute;
+				left: 0;
+				top: 0;
+				width: 24px;
+				height: 24px;
+				border: 1px solid #C8C7CC;
+				background: #fff;
+			}
+
+			&::after {
+				content: '';
+				position: absolute;
+				background: url("../../images/icon-check.svg");
+				width: 15px;
+				height: 12px;
+				top: 6px;
+				left: 6px;
+				transition: all .2s;
+			}
+		}
+	}
+
+	&:not(:checked) {
+		& + label {
+			&::after {
+				opacity: 0;
+				transform: scale(0);
+			}
+		}
+	}
+
+	&:checked {
+		& + label {
+			&::after {
+				opacity: 1;
+				transform: scale(1);
+			}
+		}
+	}
+
+	&:focus {
+		& + label {
+			&::before {
+				border-color: #C8C7CC;
+				border-radius: 4px;
+			}
+		}
+	}
+}

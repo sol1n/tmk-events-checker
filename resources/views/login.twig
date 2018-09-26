@@ -1,23 +1,26 @@
 {% extends 'blocks/page' %}
 
 {% block content %}
-	
-	{% if errors|length > 0 %}
-        <div class="alert alert-danger">
-            <ul>
-                {% for error in errors.all() %}
-                    <li>{{ error }}</li>
-                {% endfor %}
-            </ul>
-        </div>
-    {% endif %}
+	<div class="login-form">
 
-	<form method="POST" action="{{ route('login') }}">
-		{{ csrf_field() }}
+        <h2>{{ trans('app.participants registration') }}</h2>
 
-		<input name="password" type="password" />
+    	<form method="POST" action="{{ route('login') }}">
+    		{{ csrf_field() }}
 
-		<input type="submit" value="send" />
-	</form>
+            {% if errors|length > 0 %}
+                <div class="errors">
+                    <ul>
+                        {% for error in errors.all() %}
+                            <li>{{ error }}</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            {% endif %}
+
+    		<input name="password" type="password" placeholder="{{ trans('app.please enter password') }}" />
+    		<button type="submit" class="button" type="submit" />{{ trans('app.login') }}</button>
+    	</form>
+    </div>
 
 {% endblock %}

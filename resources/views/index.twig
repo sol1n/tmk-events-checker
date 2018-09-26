@@ -1,7 +1,22 @@
 {% extends 'blocks/page' %}
 
 {% block content %}
-	{% for event in events %}
-		{{ event.fields.title }}
-	{% endfor %}
+	<div class="events-list">
+
+		<h2>{{ trans('app.events') }}</h2>
+
+		<div class="events">
+			{% for event in events %}
+				<div class="event">
+					<a href="{{ route('event', {event: event.id}) }}">
+						{{ event.fields.title }}
+					</a>
+					<svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+						<rect width="24" height="24" fill="white"/>
+						<path d="M9.27445 5.5L8.00013 6.73157L13.4497 12L8 17.2684L9.27432 18.5L16 11.9999L9.27445 5.5Z" fill="#C8C7CC"/>
+					</svg>
+				</div>
+			{% endfor %}
+		</div>
+	</div>
 {% endblock %}

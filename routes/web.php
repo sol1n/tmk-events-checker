@@ -12,4 +12,6 @@
 */
 
 Route::get('/', 'BaseController@index')->name('index');
+Route::get('/event/{event}', 'BaseController@event')->name('event');
+Route::post('/event/{event}', 'BaseController@save')->name('save');
 Route::post('/login', 'BaseController@login')->name('login');

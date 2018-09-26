@@ -14,5 +14,8 @@
         "cross-env": "^5.1",
         "jquery": "^3.2",
         "laravel-mix": "^2.0"
+    },
+    "dependencies": {
+        "normalize.css": "^8.0.0"
     }
 }
