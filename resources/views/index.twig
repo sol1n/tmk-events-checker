@@ -1,1 +1,7 @@
-index
+{% extends 'blocks/page' %}
+
+{% block content %}
+	{% for event in events %}
+		{{ event.fields.title }}
+	{% endfor %}
+{% endblock %}

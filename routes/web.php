@@ -11,4 +11,5 @@
 |
 */
 
-Route::get('/', 'BaseController@index');
+Route::get('/', 'BaseController@index')->name('index');
+Route::post('/login', 'BaseController@login')->name('login');
