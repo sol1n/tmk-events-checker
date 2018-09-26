@@ -767,7 +767,28 @@ module.exports = __webpack_require__(31);
 __webpack_require__(9);
 
 $(function () {
-  console.log('started');
+	$('[data-save]').on('click', function () {
+		var url = $(this).data('save');
+		var registred = [];
+		var button = $(this);
+
+		$('input[type=checkbox]:checked').each(function () {
+			registred.push($(this).attr('data-id'));
+		});
+
+		console.log(registred);
+
+		button.prop('disabled', true);
+
+		axios.post(url, {
+			'participants': registred
+		}).then(function (response) {
+			button.prop('disabled', false);
+			console.log(response.data);
+		}).catch(function (error) {
+			console.log(error);
+		});
+	});
 });
 
 /***/ }),

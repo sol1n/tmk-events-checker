@@ -36,9 +36,14 @@
 						{{ participant.firstName }}
 					</div>
 					<div class="checkbox">
-						<input type="checkbox" name="status[{{ participant.id }}]" id="participant-id-{{ participant.id }}" />
+						<input 
+							type="checkbox" 
+							name="status[{{ participant.id }}]" 
+							{% if participant.registred %}checked{% endif %}
+							data-id="{{ participant.userId }}"
+							id="participant-id-{{ participant.userId }}" />
 
-						<label for="participant-id-{{ participant.id }}"></label>
+						<label for="participant-id-{{ participant.userId }}"></label>
 					</div>
 				</div>
 			{% endfor %}

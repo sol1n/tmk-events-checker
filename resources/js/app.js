@@ -8,5 +8,28 @@
 require('./bootstrap');
 
 $(function(){
-	console.log('started');
+	$('[data-save]').on('click', function() {
+		let url = $(this).data('save');
+		let registred = [];
+		var button = $(this);
+
+		$('input[type=checkbox]:checked').each(function() {
+			registred.push($(this).attr('data-id'))
+		})
+
+		console.log(registred);
+		
+		button.prop('disabled', true);
+
+		axios.post(url, {
+			'participants': registred
+		})
+		.then(function (response) {
+			button.prop('disabled', false);
+			console.log(response.data);
+		})
+		.catch(function (error) {
+			console.log(error);
+		});
+	})
 });

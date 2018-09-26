@@ -11,6 +11,7 @@ use Appercode\Element;
 use Appercode\Exceptions\User\WrongCredentialsException;
 
 use Carbon\Carbon;
+use Illuminate\Support\Collection;
 
 class BaseController extends Controller
 {
@@ -19,6 +20,89 @@ class BaseController extends Controller
     protected function imagePath(Backend $backend, string $id): string
     {
         return $backend->server . $backend->project . '/images/' . $id . '/download/image.jpg?width=50&height=50&stretch=uniformToFill';
+    }
+
+    protected function getEvent(string $eventId): array
+    {
+        $event = Element::find('Events', $eventId, $this->user->backend);
+        if (isset($event->fields['beginAt']) && ($event->fields['beginAt'])) {
+            $date = Carbon::parse($event->fields['beginAt'])->setTimezone('UTC');
+            $date = implode(' ', [
+                $date->format('j'),
+                mb_strtolower(__('months.' . $date->month)),
+                $date->format('y, H:i')
+            ]);
+        } else {
+            $date = '';
+        }
+
+        return [
+            'title' => $event->fields['title'] ?? '',
+            'date' => $date,
+            'id' => $event->id
+        ];
+    }
+
+    protected function getParticipants(string $eventId): Collection
+    {
+        $fromFavorites = Element::list('Favorites', $this->user->backend, [
+            'where' => [
+                'objectId' => $eventId,
+                'isMandatory' => true,
+                'userId' => [
+                    '$exists' => true
+                ]
+            ],
+            'take' => -1
+        ])->map(function ($item) {
+            return $item->fields['userId'];
+        })->values()->toArray();
+
+        $fromJournal = Element::list('Checkins', $this->user->backend, [
+            'where' => [
+                'objectId' => $eventId,
+                'userId' => [
+                    '$exists' => true
+                ]
+            ],
+            'take' => -1
+        ])->map(function ($item) {
+            return $item->fields['userId'];
+        })->values()->toArray();
+
+        $fromJournalMapped = collect($fromJournal)->mapWithKeys(function ($item) {
+            return [$item => true];
+        })->toArray();
+
+        $userIds = array_values(array_unique(array_merge($fromJournal, $fromFavorites)));
+
+        if (count($userIds)) {
+            return Element::list('UserProfiles', $this->user->backend, [
+                'where' => [
+                    'userId' => [
+                        '$in' => $userIds
+                    ]
+                ],
+                'order' => [
+                    'lastName' => 'asc'
+                ]
+            ])->map(function ($item) use ($fromJournalMapped) {
+                return [
+                    'id' => $item->id,
+                    'userId' => $item->fields['userId'],
+                    'photo' => (isset($item->fields['photoFileId']) && $item->fields['photoFileId'])
+                        ? $this->imagePath($this->user->backend, $item->fields['photoFileId'])
+                        : null,
+                    'firstName' => $item->fields['firstName'] ?? '',
+                    'lastName' => $item->fields['lastName'] ?? '',
+                    'initials' => (isset($item->fields['firstName']) ? mb_substr($item->fields['firstName'], 0, 1) : '')
+                        . (isset($item->fields['lastName']) ? mb_substr($item->fields['lastName'], 0, 1) : ''),
+                    'registred' => isset($fromJournalMapped[$item->fields['userId']])
+                ];
+            });
+        } else {
+            return collect([]);
+        }
     }
 
     public function __construct()
@@ -49,9 +133,6 @@ class BaseController extends Controller
             'take' => -1,
             'where' => [
                 'checkIn' => true,
-                'isPublished' => [
-                    '$in' => [true, false]
-                ]
             ],
             'order' => [
                 'title' => 'asc'
@@ -65,49 +146,9 @@ class BaseController extends Controller
 
     public function event($eventId)
     {
-        $event = Element::find('Events', $eventId, $this->user->backend);
-        if (isset($event->fields['beginAt']) && ($event->fields['beginAt'])) {
-            $date = Carbon::parse($event->fields['beginAt'])->setTimezone('UTC');
-            $date = implode(' ', [
-                $date->format('j'),
-                mb_strtolower(__('months.' . $date->month)),
-                $date->format('y, H:i')
-            ]);
-        } else {
-            $date = '';
-        }
-
-        $fromFavorites = Element::list('Favorites', $this->user->backend, [
-            'where' => [
-                'objectId' => $eventId
-            ]
-        ]);
-
-        $participants = Element::list('UserProfiles', $this->user->backend, [
-            'take' => 3,
-            'order' => [
-                'lastName' => 'asc'
-            ]
-        ])->map(function ($item) {
-            return [
-                'id' => $item->id,
-                'photo' => (isset($item->fields['photoFileId']) && $item->fields['photoFileId'])
-                    ? $this->imagePath($this->user->backend, $item->fields['photoFileId'])
-                    : null,
-                'firstName' => $item->fields['firstName'] ?? '',
-                'lastName' => $item->fields['lastName'] ?? '',
-                'initials' => (isset($item->fields['firstName']) ? mb_substr($item->fields['firstName'], 0, 1) : '')
-                    . (isset($item->fields['lastName']) ? mb_substr($item->fields['lastName'], 0, 1) : '')
-            ];
-        });
-
         return view('event', [
-            'event' => [
-                'title' => $event->fields['title'] ?? '',
-                'date' => $date,
-                'id' => $event->id
-            ],
-            'participants' => $participants
+            'event' => $this->getEvent($eventId),
+            'participants' => $this->getParticipants($eventId)
         ]);
     }
 
@@ -138,5 +179,67 @@ class BaseController extends Controller
         session(['userId' => $request->input('password')]);
 
         return back();
+    }
+
+    public function save(Request $request, string $eventId)
+    {
+        $validatedData = $request->validate([
+            'participants' => 'present|array',
+        ]);
+
+        $participants = collect($validatedData['participants'])->map(function ($item) {
+            return (int) $item;
+        })->values()->toArray();
+
+        $fromJournal = Element::list('Checkins', $this->user->backend, [
+            'where' => [
+                'objectId' => $eventId,
+                'userId' => [
+                    '$exists' => true
+                ]
+            ],
+            'take' => -1
+        ])->map(function ($item) {
+            return $item->fields['userId'];
+        })->values()->toArray();
+
+        $toKeep = array_values(array_intersect($fromJournal, $participants));
+        $toCreate = array_values(array_diff($participants, $toKeep));
+        $toDelete = array_values(array_diff($fromJournal, $toKeep));
+
+        $created = [];
+        $journalRecordsToDelete = [];
+
+        if (count($toDelete)) {
+            $journalRecordsToDelete = Element::list('Checkins', $this->user->backend, [
+                'where' => [
+                    'userId' => [
+                        '$in' => $toDelete,
+                    ]
+                ],
+                'take' => -1
+            ])->map(function ($item) {
+                return $item->id;
+            })->values()->toArray();
+
+            Element::bulkDelete('Checkins', $journalRecordsToDelete, $this->user->backend);
+        }
+
+        foreach ($toCreate as $userId) {
+            $created[] = Element::create('Checkins', [
+                'userId' => $userId,
+                'objectId' => $eventId,
+                'schemaId' => 'Events'
+            ], $this->user->backend)->id;
+        }
+
+        return response()->json([
+            'usersToKeep' => $toKeep,
+            'usersToDelete' => $toDelete,
+            'usersToCreate' => $toCreate,
+            'createdRecords' => $created,
+            'deletedRecords' => $journalRecordsToDelete,
+            'eventId' => $eventId
+        ]);
     }
 }

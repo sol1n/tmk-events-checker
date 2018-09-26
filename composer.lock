@@ -12,7 +12,7 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/sol1n/appercode-laravel-support.git",
-                "reference": "26eed601be12125b4c8266f701f542a34596f9c0"
+                "reference": "3249260f997957478d16f6770b7f2fde873e2835"
             },
             "require": {
                 "guzzlehttp/guzzle": "^6.3",
@@ -52,7 +52,7 @@
                 "laravel",
                 "mobile"
             ],
-            "time": "2018-09-26T08:31:09+00:00"
+            "time": "2018-09-26T15:01:16+00:00"
         },
         {
             "name": "dnoegel/php-xdg-base-dir",

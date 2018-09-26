@@ -36,6 +36,10 @@ button, .button {
 		color: $orange;
 		border-color: $orange;
 	}
+
+	&:disabled {
+		background-color: lighten($orange, 20%);
+	}
 }
 
 .errors {

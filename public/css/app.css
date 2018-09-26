@@ -384,6 +384,11 @@ button.back,
   border-color: #FF762D;
 }
 
+button:disabled,
+.button:disabled {
+  background-color: #ffb993;
+}
+
 .errors {
   color: #fff;
   margin-bottom: 24px;
@@ -519,7 +524,7 @@ button.back,
 
 .participants-list .event {
   background-color: #fff;
-  border-bottom: 1px solid #8E8E93;
+  border-bottom: 1px solid #e7e7e7;
 }
 
 .participants-list .event .wrapper {
@@ -651,6 +656,7 @@ input[type="checkbox"]:checked + label {
   padding-left: 40px;
   line-height: 24px;
   cursor: pointer;
+  top: -4px;
 }
 
 input[type="checkbox"]:not(:checked) + label::before,
