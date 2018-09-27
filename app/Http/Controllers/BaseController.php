@@ -105,6 +105,55 @@ class BaseController extends Controller
         }
     }
 
+    public function getDates()
+    {
+        $dates = Element::bulk('Events', [
+            [
+                'where' => [
+                    'checkIn' => true,
+                    'beginAt' => [
+                        '$exists' => true
+                    ]
+                ],
+                'order' => [
+                    'beginAt' => 'asc'
+                ],
+                'take' => 1,
+                'include' => ['id', 'createdAt', 'updatedAt', 'beginAt', 'ownerId']
+            ],
+            [
+                'where' => [
+                    'checkIn' => true,
+                    'beginAt' => [
+                        '$exists' => true
+                    ]
+                ],
+                'order' => [
+                    'beginAt' => 'desc'
+                ],
+                'take' => 1,
+                'include' => ['id', 'createdAt', 'updatedAt', 'beginAt', 'ownerId']
+            ]
+        ], $this->user->backend);
+
+        $begin = isset($dates->first()['list']) && isset($dates->first()['list']->first()->fields['beginAt'])
+            ? Carbon::parse($dates->first()['list']->first()->fields['beginAt'])
+            : Carbon::now()->subDays(5);
+        $end = isset($dates->last()['list']) && isset($dates->last()['list']->last()->fields['beginAt'])
+            ? Carbon::parse($dates->last()['list']->last()->fields['beginAt'])
+            : Carbon::now()->addDays(5);
+
+        $result = [];
+
+        $current = $begin;
+        while ($current <= $end) {
+            $result[] = $current->format('d.m.Y');
+            $current->addDay();
+        }
+
+        return $result;
+    }
+
     public function __construct()
     {
         $this->middleware(function ($request, $next) {
@@ -127,12 +176,20 @@ class BaseController extends Controller
         })->except('login');
     }
 
-    public function index()
+    public function index($date = null)
     {
+        $dates = $this->getDates();
+
+        $currentDate = Carbon::parse(is_null($date) ? array_first($dates) : $date, 'UTC');
+
         $events = Element::list('Events', $this->user->backend, [
             'take' => -1,
             'where' => [
                 'checkIn' => true,
+                'beginAt' => [
+                    '$gte' => $currentDate->startOfDay()->toAtomString(),
+                    '$lte' => $currentDate->endOfDay()->toAtomString(),
+                ]
             ],
             'order' => [
                 'title' => 'asc'
@@ -140,7 +197,8 @@ class BaseController extends Controller
         ]);
 
         return view('index', [
-            'events' => $events
+            'events' => $events,
+
         ]);
     }
 
