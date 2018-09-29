@@ -789,6 +789,18 @@ $(function () {
 			console.log(error);
 		});
 	});
+
+	$('.events-list .event').on('click', function () {
+		var link = $(this).find('a');
+		if (link.length) {
+			document.location.href = link.attr('href');
+		}
+	});
+
+	$('.dates select').on('change', function () {
+		var value = $(this).val();
+		document.location.href = '/' + value;
+	});
 });
 
 /***/ }),

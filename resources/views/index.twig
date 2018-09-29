@@ -5,6 +5,20 @@
 
 		<h2>{{ trans('app.events') }}</h2>
 
+		{% if dates|length %}
+			<div class="dates">
+				<select name="dates">
+					{% for formatted, date in dates %}
+						{% if currentDate == date %}
+							<option selected value="{{ date }}">{{ formatted }}</option>
+						{% else %}
+							<option value="{{ date }}">{{ formatted }}</option>
+						{% endif %}
+					{% endfor %}
+				</select>
+			</div>
+		{% endif %}
+
 		<div class="events">
 			{% for event in events %}
 				<div class="event">

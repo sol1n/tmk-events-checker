@@ -12,7 +12,7 @@
 */
 
 Route::get('/', 'BaseController@index')->name('index');
-Route::get('/{date}', 'BaseController@index')->name('index')->where('date', '[0-9/.]+');;
+Route::get('/{date?}', 'BaseController@index')->name('index')->where('date', '[0-9/.]+');;
 Route::get('/event/{event}', 'BaseController@event')->name('event');
 Route::post('/event/{event}', 'BaseController@save')->name('save');
 Route::post('/login', 'BaseController@login')->name('login');

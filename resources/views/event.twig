@@ -51,7 +51,7 @@
 	</div>
 
 	<div class="footer">
-		<a href="{{ route('index') }}" class="button back">
+		<a href="{{ route('index', {date: event.backDate}) }}" class="button back">
 			{{ trans('app.back') }}
 		</a>
 		<button data-save="{{ route('save', {event: event.id}) }}">{{ trans('app.save') }}</button>

@@ -474,6 +474,38 @@ button:disabled,
   font-size: 1rem;
 }
 
+.events-list .dates {
+  position: relative;
+  display: inline-block;
+  width: 100%;
+  border: none;
+  overflow: hidden;
+}
+
+.events-list .dates select {
+  width: 100%;
+  border: none;
+  background-color: #fff;
+  font-size: 0.9rem;
+  -webkit-appearance: none;
+     -moz-appearance: none;
+          appearance: none;
+  padding: 12px 16px;
+  color: #373737;
+}
+
+.events-list .dates::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  margin-top: -2px;
+  right: 25px;
+  display: inline-block;
+  background: url(/images/icon-select-arrow-down.svg?aa4b8554b0bd5ec91bddd8bcbf46a9d0) no-repeat center;
+  width: 8px;
+  height: 5px;
+}
+
 .events-list .events {
   background-color: #fff;
 }
@@ -489,7 +521,12 @@ button:disabled,
   -webkit-box-pack: justify;
       -ms-flex-pack: justify;
           justify-content: space-between;
+  cursor: pointer;
   border-bottom: 1px solid #e7e7e7;
+}
+
+.events-list .events .event:hover a {
+  color: #FF762D;
 }
 
 .events-list .events .event:last-child {

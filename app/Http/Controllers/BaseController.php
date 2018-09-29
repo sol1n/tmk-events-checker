@@ -27,18 +27,20 @@ class BaseController extends Controller
         $event = Element::find('Events', $eventId, $this->user->backend);
         if (isset($event->fields['beginAt']) && ($event->fields['beginAt'])) {
             $date = Carbon::parse($event->fields['beginAt'])->setTimezone('UTC');
+            $backDate = $date->format('d.m.Y');
             $date = implode(' ', [
                 $date->format('j'),
                 mb_strtolower(__('months.' . $date->month)),
                 $date->format('y, H:i')
             ]);
         } else {
-            $date = '';
+            $date = $backDate = '';
         }
 
         return [
             'title' => $event->fields['title'] ?? '',
             'date' => $date,
+            'backDate' => $backDate,
             'id' => $event->id
         ];
     }
@@ -140,14 +142,19 @@ class BaseController extends Controller
             ? Carbon::parse($dates->first()['list']->first()->fields['beginAt'])
             : Carbon::now()->subDays(5);
         $end = isset($dates->last()['list']) && isset($dates->last()['list']->last()->fields['beginAt'])
-            ? Carbon::parse($dates->last()['list']->last()->fields['beginAt'])
+            ? Carbon::parse($dates->last()['list']->last()->fields['beginAt'])->addDay()
             : Carbon::now()->addDays(5);
 
         $result = [];
 
         $current = $begin;
         while ($current <= $end) {
-            $result[] = $current->format('d.m.Y');
+            $dateFormatted = implode(' ', [
+                $current->format('j'),
+                mb_strtolower(__('months.' . $current->month)),
+                $current->format('Y')
+            ]);
+            $result[$dateFormatted] = $current->format('d.m.Y');
             $current->addDay();
         }
 
@@ -198,7 +205,8 @@ class BaseController extends Controller
 
         return view('index', [
             'events' => $events,
-
+            'dates' => $dates,
+            'currentDate' => $currentDate->format('d.m.Y')
         ]);
     }
 
