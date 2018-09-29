@@ -87,7 +87,8 @@ class BaseController extends Controller
                 ],
                 'order' => [
                     'lastName' => 'asc'
-                ]
+                ],
+                'take' => -1
             ])->map(function ($item) use ($fromJournalMapped) {
                 return [
                     'id' => $item->id,
