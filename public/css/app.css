@@ -543,6 +543,11 @@ button:disabled,
   color: #FF762D;
 }
 
+.events-list .events .event a .hint {
+  font-size: 0.8rem;
+  color: #8E8E93;
+}
+
 .events-list .events .event svg {
   width: 24px;
   height: 24px;

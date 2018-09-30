@@ -68,6 +68,11 @@
 				}
 
 				max-width: calc(100% - 24px);
+
+				.hint {
+					font-size: 0.8rem;
+					color: $gray;
+				}
 			}
 
 			svg {

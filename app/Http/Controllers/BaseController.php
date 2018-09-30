@@ -190,6 +190,10 @@ class BaseController extends Controller
 
         $currentDate = Carbon::parse(is_null($date) ? array_first($dates) : $date, 'UTC');
 
+        $areas = Element::list('Areas', $this->user->backend, ['take' => -1])->mapWithKeys(function($item) {
+            return [$item->id => $item];
+        })->toArray();
+
         $events = Element::list('Events', $this->user->backend, [
             'take' => -1,
             'where' => [
@@ -202,7 +206,13 @@ class BaseController extends Controller
             'order' => [
                 'title' => 'asc'
             ]
-        ]);
+        ])->each(function($item) use ($areas) {
+            if (isset($item->fields['areaId']) && (isset($areas[$item->fields['areaId']]))) {
+                $item->area = isset($areas[$item->fields['areaId']]->fields['title']) 
+                    ? $areas[$item->fields['areaId']]->fields['title'] 
+                    : '';
+            }
+        });
 
         return view('index', [
             'events' => $events,
