@@ -45,7 +45,7 @@ class BaseController extends Controller
         ];
     }
 
-    protected function getParticipants(string $eventId): Collection
+    protected function getParticipants(string $eventId, $team): Collection
     {
         $fromFavorites = Element::list('Favorites', $this->user->backend, [
             'where' => [
@@ -79,6 +79,12 @@ class BaseController extends Controller
         $userIds = array_values(array_unique(array_merge($fromJournal, $fromFavorites)));
 
         if (count($userIds)) {
+            if (!is_null($team)) {
+                $userIds = array_intersect($userIds, array_merge($team->fields['userIds1'], $team->fields['userIds2']));
+                $userIds = array_unique($userIds);
+                $userIds = array_values($userIds);
+            }
+
             return Element::list('UserProfiles', $this->user->backend, [
                 'where' => [
                     'userId' => [
@@ -162,6 +168,13 @@ class BaseController extends Controller
         return $result;
     }
 
+    public function getTeams()
+    {
+        return Element::list('TeamStandingsTeams', $this->user->backend, [
+            'take' => -1
+        ]);
+    }
+
     public function __construct()
     {
         $this->middleware(function ($request, $next) {
@@ -190,7 +203,7 @@ class BaseController extends Controller
 
         $currentDate = Carbon::parse(is_null($date) ? array_first($dates) : $date, 'UTC');
 
-        $areas = Element::list('Areas', $this->user->backend, ['take' => -1])->mapWithKeys(function($item) {
+        $areas = Element::list('Areas', $this->user->backend, ['take' => -1])->mapWithKeys(function ($item) {
             return [$item->id => $item];
         })->toArray();
 
@@ -206,10 +219,10 @@ class BaseController extends Controller
             'order' => [
                 'title' => 'asc'
             ]
-        ])->each(function($item) use ($areas) {
+        ])->each(function ($item) use ($areas) {
             if (isset($item->fields['areaId']) && (isset($areas[$item->fields['areaId']]))) {
-                $item->area = isset($areas[$item->fields['areaId']]->fields['title']) 
-                    ? $areas[$item->fields['areaId']]->fields['title'] 
+                $item->area = isset($areas[$item->fields['areaId']]->fields['title'])
+                    ? $areas[$item->fields['areaId']]->fields['title']
                     : '';
             }
         });
@@ -221,11 +234,19 @@ class BaseController extends Controller
         ]);
     }
 
-    public function event($eventId)
+    public function event(Request $request, $eventId)
     {
+        if ($request->has('team') && $request->get('team')) {
+            $currentTeam = Element::find('TeamStandingsTeams', $request->get('team'), $this->user->backend);
+        } else {
+            $currentTeam = null;
+        }
+
         return view('event', [
+            'currentTeam' => $currentTeam,
             'event' => $this->getEvent($eventId),
-            'participants' => $this->getParticipants($eventId)
+            'teams' => $this->getTeams(),
+            'participants' => $this->getParticipants($eventId, $currentTeam)
         ]);
     }
 

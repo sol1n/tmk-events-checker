@@ -8,6 +8,37 @@
 		font-size: 1rem;
 	}
 
+	.teams {
+	  position: relative;
+	  display: inline-block;
+	  width: 100%;
+	  border: none;
+	  overflow: hidden;
+
+	  select {
+	    width: 100%;
+	    border: none;
+	    background-color: $white;
+	    font-size: 0.9rem;
+	    appearance: none;
+	    padding: 12px 16px;
+	    color: $font-color;
+
+	  }
+
+	  &::after {
+	    content: '';
+	    position: absolute;
+	    top: 50%;
+	    margin-top: -2px;
+	    right: 25px;
+	    display: inline-block;
+	    background: url("../images/icon-select-arrow-down.svg") no-repeat center;
+	    width: 8px;
+	    height: 5px;
+	  }
+	}
+
 	.event {
 		background-color: $white;
 		border-bottom: 1px solid $lightgray;

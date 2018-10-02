@@ -564,6 +564,38 @@ button:disabled,
   font-size: 1rem;
 }
 
+.participants-list .teams {
+  position: relative;
+  display: inline-block;
+  width: 100%;
+  border: none;
+  overflow: hidden;
+}
+
+.participants-list .teams select {
+  width: 100%;
+  border: none;
+  background-color: #fff;
+  font-size: 0.9rem;
+  -webkit-appearance: none;
+     -moz-appearance: none;
+          appearance: none;
+  padding: 12px 16px;
+  color: #373737;
+}
+
+.participants-list .teams::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  margin-top: -2px;
+  right: 25px;
+  display: inline-block;
+  background: url(/images/icon-select-arrow-down.svg?aa4b8554b0bd5ec91bddd8bcbf46a9d0) no-repeat center;
+  width: 8px;
+  height: 5px;
+}
+
 .participants-list .event {
   background-color: #fff;
   border-bottom: 1px solid #e7e7e7;

@@ -44,4 +44,9 @@ $(function(){
 		var value = $(this).val();
 		document.location.href = '/' + value;
 	})
+
+	$('.teams select').on('change', function() {
+		var value = $(this).val();
+		document.location.href = value;
+	})
 });

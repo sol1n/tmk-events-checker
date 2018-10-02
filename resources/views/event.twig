@@ -3,7 +3,26 @@
 {% block content %}
 	<div class="participants-list">
 
-		<h2>{{ trans('app.participants') }}</h2>
+		{% if (not currentTeam is null) %}
+			<h2>{{ trans('app.team participants', {team: currentTeam.fields.title}) }}</h2>
+		{% else %}
+			<h2>{{ trans('app.participants') }}</h2>
+		{% endif %}
+
+		{% if teams|length %}
+			<div class="teams">
+				<select name="team">
+					<option value="{{ route('event', {event: event.id}) }}">{{ trans('app.team not selected') }}</option>
+					{% for team in teams %}
+						{% if currentTeam.id == team.id %}
+							<option selected value="{{ route('event', {event: event.id}) }}?team={{ team.id }}">{{ team.fields.title }}</option>
+						{% else %}
+							<option value="{{ route('event', {event: event.id}) }}?team={{ team.id }}">{{ team.fields.title }}</option>
+						{% endif %}
+					{% endfor %}
+				</select>
+			</div>
+		{% endif %}
 
 		<div class="event">
 			<div class="wrapper">

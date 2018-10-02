@@ -7,6 +7,8 @@ return [
     'login' => 'Login',
     'events' => 'Events',
     'participants' => 'Participants',
-    'back' => 'Назад',
-    'save' => 'Сохранить',
+    'team participants' => 'Team :team members',
+    'back' => 'Back',
+    'save' => 'Save',
+    'team not selected' => 'Select team'
 ];
