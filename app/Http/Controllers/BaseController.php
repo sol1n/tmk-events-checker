@@ -308,20 +308,20 @@ class BaseController extends Controller
         $created = [];
         $journalRecordsToDelete = [];
 
-        if (count($toDelete)) {
-            $journalRecordsToDelete = Element::list('Checkins', $this->user->backend, [
-                'where' => [
-                    'userId' => [
-                        '$in' => $toDelete,
-                    ]
-                ],
-                'take' => -1
-            ])->map(function ($item) {
-                return $item->id;
-            })->values()->toArray();
+        // if (count($toDelete)) {
+        //     $journalRecordsToDelete = Element::list('Checkins', $this->user->backend, [
+        //         'where' => [
+        //             'userId' => [
+        //                 '$in' => $toDelete,
+        //             ]
+        //         ],
+        //         'take' => -1
+        //     ])->map(function ($item) {
+        //         return $item->id;
+        //     })->values()->toArray();
 
-            Element::bulkDelete('Checkins', $journalRecordsToDelete, $this->user->backend);
-        }
+        //     Element::bulkDelete('Checkins', $journalRecordsToDelete, $this->user->backend);
+        // }
 
         foreach ($toCreate as $userId) {
             $created[] = Element::create('Checkins', [
